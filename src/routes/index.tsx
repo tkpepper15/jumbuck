@@ -10,6 +10,7 @@ interface Term {
 }
 
 interface StoreData {
+  idCounter: number;
   terms: Term[];
 }
 
@@ -32,6 +33,7 @@ export default component$(() => {
   const store = useStore<StoreData>(
     {
       terms: [],
+      idCounter: 0,
     },
     { recursive: true }
   );
@@ -39,6 +41,7 @@ export default component$(() => {
   useTask$(async () => {
     // Make call to load data from the database here.
     store.terms = terms;
+    store.idCounter = terms.length;
   });
 
   return (
@@ -53,7 +56,8 @@ export default component$(() => {
       <fieldset>
         <button
           onClick$={() => {
-            store.terms = [makeDefaultTerm(store.terms.length), ...store.terms];
+            store.terms = [makeDefaultTerm(store.idCounter), ...store.terms];
+            store.idCounter = store.idCounter + 1;
           }}
         >
           add
@@ -70,7 +74,7 @@ export default component$(() => {
       <ul class="terms-list">
         {store.terms.map((term, index) => (
           <li id={`${term.id}`}>
-                        <button
+            <button
               class="remove-button"
               aria-label="Remove this term"
               onClick$={() => {
